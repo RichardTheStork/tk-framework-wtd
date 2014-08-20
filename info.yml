@@ -13,22 +13,13 @@
 # expected fields in the configuration file for this engine
 configuration:
 
-# this app works in all engines - it does not contain 
-# any host application specific commands
-supported_engines: 
-
 # the Shotgun fields that this engine needs in order to operate correctly
 requires_shotgun_fields:
-        
+
 # More verbose description of this item 
-display_name: "Shotgun Pipeline Toolkit Starter"
-description: "Template App to quickly get up and running with the Shotgun Pipeline Toolkit."
+display_name: "Wtd Framework"
+description: "Wtd utilities and scripts."
 
 # Required minimum versions for this item to run
 requires_shotgun_version:
-requires_core_version: "v0.14.28"
-requires_engine_version:
-
-# the frameworks required to run this app
-frameworks:
-    
+requires_core_version: "v0.14.58"
