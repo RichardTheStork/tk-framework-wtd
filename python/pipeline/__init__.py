@@ -9,3 +9,4 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from .positionlist import Positionlist
+from .shots import shotManager
