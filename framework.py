@@ -10,7 +10,7 @@
 
 import sgtk
 
-class LoginFramework(sgtk.platform.Framework):
+class WtdFramework(sgtk.platform.Framework):
 	
 	##########################################################################################
 	# init and destroy
