@@ -5,10 +5,10 @@ class Positionlist:
 	path = ""
 	content = None
 	
-	def __init__(self, path):
-		self.setPath(path)
-		self.load()
-		return None
+	def __init__(self, path = None):
+		if path != None:
+			self.setPath(path)
+			self.load()
 			
 	def setPath(self, path):
 		self.path = path
@@ -22,7 +22,7 @@ class Positionlist:
 	def load(self, path = None):
 		if path != None:
 			self.path = path
-		self.content = loadJsonPositionList(path)
+		self.content = loadJsonPositionList(self.path)
 		if self.content != None:
 			self.analyseContent()
 		
@@ -57,17 +57,17 @@ class Positionlist:
 		self.others = []
 		
 		for c in self.content:
-			if c[assetType] == 'Prop':
+			if self.content[c]["assetType"] == 'Prop':
 				self.props.append(c)
-			elif c[assetType] == 'Character':
+			elif self.content[c]["assetType"] == 'Character':
 				self.characters.append(c)
-			elif c[assetType] == 'Set':
+			elif self.content[c]["assetType"] == 'Set':
 				self.sets.append(c)
-			elif c[assetType] == 'Vehicle':
+			elif self.content[c]["assetType"] == 'Vehicle':
 				self.vehicles.append(c)
-			elif c[assetType] == 'Camera':
+			elif self.content[c]["assetType"] == 'Camera':
 				self.cameras.append(c)
-			elif c[assetType] == 'Light':
+			elif self.content[c]["assetType"] == 'Light':
 				self.lights.append(c)
 			else:
 				self.others.append(c)
@@ -102,20 +102,23 @@ def createJsonPositionList(input, targetPath = None):
 	return toBeSaved
 	
 def loadJsonPositionList(sourcePath):
-	lines = None
-	
+	lines = ""
+
 	if not os.path.exists(sourcePath):
 		return None
 	
 	with open(sourcePath, 'r') as file:
-		lines = file.readlines()
-
+		readFileLines = file.readlines()
+		for l in readFileLines:
+			lines += l
+			
 	return json.loads(lines)
 
 	
 def main():
-	poslist = Positionlist()
-	print poslist.getList()
+	path = r"C:/test.txt"
+	createJsonPositionList({"bush001": {"animated": "", "asset": "bush", "assetType": "Prop", "longName": "PRP_bush001", "name": "bush001", "parentAssets": ["SUB_villageBakeryExt", "villageTest"], "position": [-1183.0890655517578, -223.82111549377441, -1715.1634216308594], "rotation": [-89.999995674288982, 180.00000500895632, 180.00000500895632], "scale": [1.0, 1.0, 1.0]}}, path)
+	poslist = Positionlist(path)
 
 if __name__ == "__main__":
 	main()
