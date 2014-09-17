@@ -10,3 +10,4 @@
 
 from . import pipeline
 from . import scripts
+from . import maya

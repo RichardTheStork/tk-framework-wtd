@@ -1,5 +1,5 @@
 import sys
-sys.path.append (r'Z:\Shotgun_Studio\install\core\python')
+sys.path.append (r'W:\WG\Shotgun_Studio\install\core\python')
 
 import sgtk
 
@@ -17,7 +17,11 @@ class assetManager():
 	projectPath = r"W:\RTS"
 	tk = None
 	
-	def __init__(self, projectPath = None):
+	def __init__(self, projectPath = None, sgtk = None):
+		if sgtk != None:
+			self.tk = sgtk
+			return
+			
 		if projectPath != None:
 			self.projectPath = projectPath
 		self.tk = sgtk.sgtk_from_path(self.projectPath)

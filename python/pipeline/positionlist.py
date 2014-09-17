@@ -75,50 +75,49 @@ class Positionlist:
 	def getList(self):
 		return self.content
 		
-	
-def setAssetDict(name, asset, assetType, longName = None, animated = None, position = [0,0,0], rotation = [0,0,0], scale = [1,1,1], parentAssets = []):
-	tempDict = {}
-	tempDict["name"] = name
-	tempDict["longName"] = longName
-	tempDict["asset"] = asset
-	tempDict["assetType"] = assetType
-	tempDict["animated"] = animated
-	tempDict["position"] = position
-	tempDict["rotation"] = rotation
-	tempDict["scale"] = scale
-	tempDict["parentAssets"] = parentAssets
-	return tempDict		
+	def setAssetDict(name, asset, assetType, longName = None, animated = None, position = [0,0,0], rotation = [0,0,0], scale = [1,1,1], parentAssets = []):
+		tempDict = {}
+		tempDict["name"] = name
+		tempDict["longName"] = longName
+		tempDict["asset"] = asset
+		tempDict["assetType"] = assetType
+		tempDict["animated"] = animated
+		tempDict["position"] = position
+		tempDict["rotation"] = rotation
+		tempDict["scale"] = scale
+		tempDict["parentAssets"] = parentAssets
+		return tempDict		
 		
-def createJsonPositionList(input, targetPath = None):
-	toBeSaved = json.dumps(input, sort_keys=True, ensure_ascii=True, indent=4)
-	
-	if targetPath != None:
-		if not os.path.exists(os.path.dirname(targetPath)):
-			os.makedirs(os.path.dirname(targetPath))
+	def createJsonPositionList(input, targetPath = None):
+		toBeSaved = json.dumps(input, sort_keys=True, ensure_ascii=True, indent=4)
+		
+		if targetPath != None:
+			if not os.path.exists(os.path.dirname(targetPath)):
+				os.makedirs(os.path.dirname(targetPath))
+				
+			with open(targetPath, 'w') as file:
+				file.write(toBeSaved)
 			
-		with open(targetPath, 'w') as file:
-			file.write(toBeSaved)
+		return toBeSaved
 		
-	return toBeSaved
-	
-def loadJsonPositionList(sourcePath):
-	lines = ""
+	def loadJsonPositionList(sourcePath):
+		lines = ""
 
-	if not os.path.exists(sourcePath):
-		return None
-	
-	with open(sourcePath, 'r') as file:
-		readFileLines = file.readlines()
-		for l in readFileLines:
-			lines += l
-			
-	return json.loads(lines)
+		if not os.path.exists(sourcePath):
+			return None
+		
+		with open(sourcePath, 'r') as file:
+			readFileLines = file.readlines()
+			for l in readFileLines:
+				lines += l
+				
+		return json.loads(lines)
 
 	
 def main():
 	path = r"C:/test.txt"
-	createJsonPositionList({"bush001": {"animated": "", "asset": "bush", "assetType": "Prop", "longName": "PRP_bush001", "name": "bush001", "parentAssets": ["SUB_villageBakeryExt", "villageTest"], "position": [-1183.0890655517578, -223.82111549377441, -1715.1634216308594], "rotation": [-89.999995674288982, 180.00000500895632, 180.00000500895632], "scale": [1.0, 1.0, 1.0]}}, path)
-	poslist = Positionlist(path)
+	# createJsonPositionList({"bush001": {"animated": "", "asset": "bush", "assetType": "Prop", "longName": "PRP_bush001", "name": "bush001", "parentAssets": ["SUB_villageBakeryExt", "villageTest"], "position": [-1183.0890655517578, -223.82111549377441, -1715.1634216308594], "rotation": [-89.999995674288982, 180.00000500895632, 180.00000500895632], "scale": [1.0, 1.0, 1.0]}}, path)
+	# poslist = Positionlist(path)
 
 if __name__ == "__main__":
 	main()
