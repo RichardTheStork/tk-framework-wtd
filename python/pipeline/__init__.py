@@ -10,3 +10,4 @@
 
 from .positionlist import Positionlist
 from .shots import shotManager
+from .assets import assetManager

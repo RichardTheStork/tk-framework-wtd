@@ -1,5 +1,8 @@
 import os, json
 
+def test():
+	print "Succesfull test!"
+
 
 class Positionlist:
 	path = ""
@@ -75,43 +78,43 @@ class Positionlist:
 	def getList(self):
 		return self.content
 		
-	def setAssetDict(name, asset, assetType, longName = None, animated = None, position = [0,0,0], rotation = [0,0,0], scale = [1,1,1], parentAssets = []):
-		tempDict = {}
-		tempDict["name"] = name
-		tempDict["longName"] = longName
-		tempDict["asset"] = asset
-		tempDict["assetType"] = assetType
-		tempDict["animated"] = animated
-		tempDict["position"] = position
-		tempDict["rotation"] = rotation
-		tempDict["scale"] = scale
-		tempDict["parentAssets"] = parentAssets
-		return tempDict		
-		
-	def createJsonPositionList(input, targetPath = None):
-		toBeSaved = json.dumps(input, sort_keys=True, ensure_ascii=True, indent=4)
-		
-		if targetPath != None:
-			if not os.path.exists(os.path.dirname(targetPath)):
-				os.makedirs(os.path.dirname(targetPath))
-				
-			with open(targetPath, 'w') as file:
-				file.write(toBeSaved)
+def setAssetDict(name, asset, assetType, longName = None, animated = None, position = [0,0,0], rotation = [0,0,0], scale = [1,1,1], parentAssets = []):
+	tempDict = {}
+	tempDict["name"] = name
+	tempDict["longName"] = longName
+	tempDict["asset"] = asset
+	tempDict["assetType"] = assetType
+	tempDict["animated"] = animated
+	tempDict["position"] = position
+	tempDict["rotation"] = rotation
+	tempDict["scale"] = scale
+	tempDict["parentAssets"] = parentAssets
+	return tempDict		
+	
+def createJsonPositionList(input, targetPath = None):
+	toBeSaved = json.dumps(input, sort_keys=True, ensure_ascii=True, indent=4)
+	
+	if targetPath != None:
+		if not os.path.exists(os.path.dirname(targetPath)):
+			os.makedirs(os.path.dirname(targetPath))
 			
-		return toBeSaved
+		with open(targetPath, 'w') as file:
+			file.write(toBeSaved)
 		
-	def loadJsonPositionList(sourcePath):
-		lines = ""
+	return toBeSaved
+	
+def loadJsonPositionList(sourcePath):
+	lines = ""
 
-		if not os.path.exists(sourcePath):
-			return None
-		
-		with open(sourcePath, 'r') as file:
-			readFileLines = file.readlines()
-			for l in readFileLines:
-				lines += l
-				
-		return json.loads(lines)
+	if not os.path.exists(sourcePath):
+		return None
+	
+	with open(sourcePath, 'r') as file:
+		readFileLines = file.readlines()
+		for l in readFileLines:
+			lines += l
+			
+	return json.loads(lines)
 
 	
 def main():
