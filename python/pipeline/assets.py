@@ -86,6 +86,38 @@ class assetManager():
 		return result
 
 		
+def getAssetNameFromSceneObject(obj):
+	assetName = obj
+	tempAssetName = ""
+	shortObj = obj
+	
+	while ":" in shortObj:
+		shortObj = shortObj[shortObj.find(":"):]
+	while "|" in shortObj:
+		shortObj = shortObj[shortObj.find("|"):]
+	
+	if "_" in shortObj:
+		if shortObj.find("_") == shortObj.rfind("_"):
+			tempAssetName = shortObj.strip("0123456789")
+			if tempAssetName.endswith("_"):
+				assetName = tempAssetName[ : -1]
+			else:
+				assetName = assetName[assetName.find("_") +1 : ]
+		else:
+			assetName = shortObj[shortObj.find("_")+1 : shortObj.rfind("_")]
+		
+def checkIfAssetExists(sg, asset, type = None):
+	filters = [ ['code', 'is', asset] ]
+	if type != None:
+		filters.append(['sg_asset_type', 'is', type])
+	
+	foundAsset = sg.find_one('Asset', filters)
+	
+	if foundAsset == None:
+		return False
+	return True
+
+		
 def main():
 	Manager = assetManager()
 	print Manager

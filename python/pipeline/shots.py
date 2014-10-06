@@ -1,24 +1,14 @@
 import sys
-sys.path.append (r'Z:\Shotgun_Studio\install\core\python')
+sys.path.append (r'W:\WG\Shotgun_Studio\install\core\python')
 
 import sgtk
+# from sgtk.platform.qt import QtCore
+# from sgtk import TankError
+
 SEQ_PREFIX = "q"
 SHOT_PREFIX = "s"
 
-
-class sequence():
-	name = ""
-	id = None
-	entity = None
-
-	
-class shot():
-	name = ""
-	sequence = None
-	id = None
-	entity = None
-
-
+		
 class shotManager():
 	projectPath = r"W:\RTS"
 	tk = None
@@ -88,10 +78,60 @@ class shotManager():
 			return tempList
 		else:
 			return self.getEntity(input)
+			
+	def getFramerange(self, seq, shot):
+		tempShot = self.findShot(seq, shot)
 		
 	def getEntity(self, input):
 		return self.tk.context_from_path(input)
 
+
+class sequence():
+	name = ""
+	id = None
+	entity = None
+	
+	def __init__(self, name, path):
+		self.name = name
+		self.path = path
+	def __str__(self):
+		return "<wtdSequence sequence=%s>" % self.name
+	def __repr__(self):
+		return "<wtdSequence sequence=%s>" % self.name
+
+	
+class shot():
+	name = ""
+	sequence = None
+	id = None
+	entity = None
+	
+	def __init__(self, name, path):
+		self.name = name
+		self.path = path
+		self.sequence = None
+	def __str__(self):
+		return "<wtdShot name=%s sequence=%s>" % (self.name , str(self.sequence))
+	def __repr__(self):
+		return "<wtdShot name=%s sequence=%s>" % (self.name , str(self.sequence))
+				
+	def getPositionlistFolder(self):
+		
+		print 'TODO'
+		
+	def getPositionlist(self):
+		
+		print 'TODO'
+		
+	def getFramerange(self):
+		
+		print 'TODO'
+		
+
+def find_sequences(sequenceName):
+	manager = shotManager()
+	
+		
 def main():
 	Manager = shotManager()
 	print Manager
