@@ -47,6 +47,7 @@ def ffmpegMakingMovie(inputFilePath, outputFilePath, audioPath = "",start_frame 
 	os.system('{ffmpeg} -start_number "{start_frame}" -i "{input}"{audio}{codec} -r {framerate} "{output}" -y'.format(ffmpeg=ffmpegPath, input=inputFilePath, output=outputFilePath, codec=codec, audio=audio, start_frame=start_frame, framerate=framerate))
 	
 def ffmpegConcatFiles(inputDict, outputFilePath, audioDict, ffmpegPath = "ffmpeg.exe"):
+	print '! TODO !'
 	concatString = ""
 	concatAudioString = ""
 	
