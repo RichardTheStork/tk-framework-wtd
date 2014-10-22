@@ -146,3 +146,108 @@ def createPropReference(file, objectname, pos, rot, scl):
 	tempLoc = cmds.rename(loc, objectname)
 	print loc, " - ", tempLoc
 	return loc
+
+def listCams(shotName,all=False):
+	camList = []
+	selectetShots = [['name':""],""]
+	if all:
+		sel = cmds.ls(type="camera")
+	else:
+		sel = cmds.ls(sl=True)
+	for cam in sel:
+		par = cmds.listRelatives(cam,parent=True,fullPath=True)
+		if par != None:
+			cam = str.split(str(par[0]),'|')[1]
+		if cam not in camList and "_s" in cam:
+			camList += [cam]
+			selectetShots["name"] += [str.split(str(cam),'_')[-1]]
+	result = False
+	return [selectetShots,camList]
+
+def publishCamera():
+	tk = tank.tank_from_path("W:/RTS/Tank/config")   
+	scenePath = cmds.file(q=True,sceneName=True)
+	scene_template = tk.template_from_path(scenePath)
+	flds = scene_template.get_fields(scenePath)
+	pb_template = tk.templates["shot_camera_maya_publish"]
+	pb_template = tk.templates["shot_camera_work"]
+	selectedCams = listCams(flds['Sequence'])
+	#   faor all cams add True in list cams:
+	selectedCams = listCams(flds['Sequence'],all=True)
+	
+	for cam in selectedCams[0]:
+		flds['Shot'] = flds['Sequence']+"_"+cam
+		pbPath = pb_template.apply_fields(flds)
+		pathFolder = os.path.dirname(pbPath)
+		if not os.path.exists(pathFolder):
+			os.makedirs(pathFolder)
+		cmds.select(selectedCams[i],r=True)
+		cmds.file(pbPath,typ="mayaAscii",es=True)
+
+def testDef(testVar):
+	print("ultra test def! plus test var:" + str(testVar))
+
+
+
+prevSelList = []
+def selectParentLocator():
+	global prevSelList
+	
+	sel = cmds.ls(sl=True)
+	
+	#if prevSelList != []:
+	#	cmds.select(prevSelList)
+	curPanel = cmds.getPanel(withFocus=True)
+	mod = cmds.getModifiers()
+	if mod == 0 and len(sel) > 1:
+		print "executed"
+		mod = 1 # if extra selection is more than one object but shift is not pressed clear selection and set mod to 1 so the selection is not only one object
+		for obj in prevSelList:
+			if obj not in sel:
+				cmds.select(obj,d=True)
+		prevSelList = []
+	for s in sel:
+		if "PRP_" in s or "PRX_" in s: # so other objects get ignored
+			shape = cmds.listRelatives(s,shapes=True,fullPath=True)
+			if cmds.objectType(shape[0]) != "locator":
+				cmds.select(s,d=True) # clear to get rid of a selected object that might not be a locator
+				parentString = cmds.listRelatives(s,parent=True,fullPath=True)
+				parentList = []
+				#print parentString
+				if parentString != None:
+					parentString = parentString[0]
+					parentList += [parentString]
+					for i in range(0,parentString.count('|')-1):
+						parentString = str.rsplit(str(parentString),"|",1)[0]
+						parentList += [parentString]
+					#print parentList
+					locList = []# store all parent locators in here
+					for par in parentList:
+						shape = cmds.listRelatives(par,shapes=True,fullPath=True)
+						if shape!=None:
+							if cmds.objectType(shape) == "locator":
+								#print par
+								locList += [par]
+					if locList != []:
+						loc = locList[0]
+						#print loc
+						#print mod
+						if curPanel in cmds.getPanel(type="modelPanel"):
+							if mod == 1:
+								cmds.select(loc,add=True)
+							if mod == 0:
+								cmds.select(loc)
+							prevSelList = cmds.ls(sl=True) # save the curr selection to use when adding extra selection stuff
+						if curPanel in cmds.getPanel(type="outlinerPanel"):
+							if mod == 1 or mod == 4:
+								cmds.select(loc,add=True)
+							if mod == 0:
+								cmds.select(loc)
+							prevSelList = cmds.ls(sl=True) # save the curr selection to use when adding extra selection stuff
+
+# if job allready exists, delete it first
+for job in cmds.scriptJob(listJobs=True):
+	if "protected=True, event=['SelectionChanged', 'selectParentLocator()']" in job:
+		jobNum = int(str.split(str(job),":")[0])
+		cmds.scriptJob( kill=jobNum, force=True)
+jobNum = cmds.scriptJob(event=["SelectionChanged","selectParentLocator()"],protected=True)
