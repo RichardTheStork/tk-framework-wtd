@@ -5,8 +5,8 @@ CREATE_NO_WINDOW  = 0x00000008
 def test():
 	print "Succesfull test!"
 
-# ffmpegPath = r"W:/WG/WTD_Code/trunk/wtd/pipeline/resources/ffmpeg/bin/ffmpeg.exe" 
-def ffmpegMakingSlates(inputFilePath, outputFilePath, audioPath = "", topleft = "", topmiddle = "", topright = "", bottomleft = "", bottommiddle = "", bottomright = "", ffmpegPath = "ffmpeg.exe", font = "arial.ttf", font_size = 16, font_color = "white", slate_height = 21, slate_color = "black@1.0", overwrite = True, logLevel = "quiet"):
+ffmpegPath = r'%s/ffmpeg.exe' %os.environ["FFMPEG_PATH"] 
+def ffmpegMakingSlates(inputFilePath, outputFilePath, audioPath = "", topleft = "", topmiddle = "", topright = "", bottomleft = "", bottommiddle = "", bottomright = "", ffmpegPath = ffmpegPath, font = "arial.ttf", font_size = 16, font_color = "white", slate_height = 21, slate_color = "black@1.0", overwrite = True, logLevel = "quiet"):
 	
 	top = "%s/5.0" %slate_height
 	bottom = "h-(%s-%s/5.0-1)" %(slate_height, slate_height)
@@ -34,7 +34,7 @@ def ffmpegMakingSlates(inputFilePath, outputFilePath, audioPath = "", topleft = 
 	value = subprocess.call(command_line_arguments, creationflags=CREATE_NO_WINDOW, shell=False)
 	return value
 	
-def ffmpegMakingMovie(inputFilePath, outputFilePath, audioPath = "",start_frame = 0, framerate = 24, encodeOptions = None, ffmpegPath = "ffmpeg.exe"):
+def ffmpegMakingMovie(inputFilePath, outputFilePath, audioPath = "",start_frame = -1, end_frame = -1, frame_duration = -1, framerate = 24, encodeOptions = None, ffmpegPath = ffmpegPath):
 	codec = ""
 	if encodeOptions != None:
 		codec = " -vcodec %s" %(encodeOptions)	
@@ -47,10 +47,29 @@ def ffmpegMakingMovie(inputFilePath, outputFilePath, audioPath = "",start_frame 
 	if audioPath != "":
 		audio = " -i %s" %audioPath
 		
-	value = subprocess.call('{ffmpeg} -start_number "{start_frame}" -i "{input}"{audio}{codec} -r {framerate} "{output}" -y'.format(ffmpeg=ffmpegPath, input=inputFilePath, output=outputFilePath, codec=codec, audio=audio, start_frame=start_frame, framerate=framerate), creationflags=CREATE_NO_WINDOW, shell=False)
+	start = ""
+	duration = ""
+	if start_frame > -1:
+		start = ' -start_number "%s"' %start_frame
+	if end_frame > -1:
+		numberOfFrames = 1 + end_frame - start_frame
+		duration = ' -vframes "%s"' %numberOfFrames
+	if frame_duration > -1:
+		duration = ' -vframes "%s"' %frame_duration
+		
+	if "\\" in ffmpegPath:
+		ffmpegPath = ffmpegPath.replace("\\","/")
+	
+	"""
+		-rc_override[:stream_specifier] override (output,per-stream)
+		Rate control override for specific intervals, formatted as "int,int,int" list separated with slashes. Two first values are the beginning and end frame numbers, last one is quantizer to use if positive, or quality factor if negative.
+	"""	
+	ffmpeg_command = '{ffmpeg}{start_frame} -i "{input}"{audio}{codec} -r {framerate}{duration} "{output}" -y'.format(ffmpeg=ffmpegPath, input=inputFilePath, output=outputFilePath, codec=codec, audio=audio, start_frame=start, duration=duration,framerate=framerate)
+	print ffmpeg_command
+	value = subprocess.call(ffmpeg_command)
 	return value
 	
-def ffmpegConcatFiles(inputDict, outputFilePath, audioDict, ffmpegPath = "ffmpeg.exe"):
+def ffmpegConcatFiles(inputDict, outputFilePath, audioDict, ffmpegPath = ffmpegPath):
 	print '! TODO !'
 	concatString = ""
 	concatAudioString = ""
@@ -62,3 +81,20 @@ def ffmpegConcatFiles(inputDict, outputFilePath, audioDict, ffmpegPath = "ffmpeg
 	
 	value = subprocess.call('{ffmpeg} -start_number "{start_frame}" -i "{input}"{audio} "{output}" -y'.format(ffmpeg=ffmpegPath, input=concatString, output=outputFilePath, audio=concatAudioString))
 	return value
+
+def main():
+	ffmpegPath =r'%s/ffmpeg.exe' %os.environ["FFMPEG_PATH"]
+	input = r'W:\RTS\Renders\Sequences\lay\q350\publish\maya\v002\playblast\1724x936\q350_lay.%04d.png'
+	output = r'C:\Users\mclaeys\Desktop\Test_q350.mov'
+	start = 1032
+	end = 1080
+	duration = 27
+	encoder = "libx264"
+	
+	# value = subprocess.call(ffmpegPath)
+	value = ffmpegMakingMovie(inputFilePath = input, outputFilePath = output, start_frame = start, end_frame = end, framerate = 24, ffmpegPath = ffmpegPath)
+	return value
+	
+	
+# if __name__ == '__main__':
+    # main()
