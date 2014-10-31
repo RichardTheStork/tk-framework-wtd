@@ -41,35 +41,37 @@ def ffmpegMakingSlates(inputFilePath, outputFilePath, audioPath = "", topleft = 
 	
 def ffmpegMakingMovie(inputFilePath, outputFilePath, audioPath = "",start_frame = -1, end_frame = -1, frame_duration = -1, framerate = 24, encodeOptions = None, ffmpegPath = ffmpegPath):
 	codec = ""
-	if encodeOptions != None:
-		codec = " -vcodec %s" %(encodeOptions)	
-	elif outputFilePath.endswith(".mov"):
-		codec = " -vcodec %s" %("mjpeg")
+	if outputFilePath.endswith(".mov") or encodeOptions == "mjpeg":
+		codec = " -vcodec %s -qscale 1" %("mjpeg")
 	elif outputFilePath.endswith(".mp4"):
 		codec = " -vcodec %s" %("libx264")
-		
-	audio = ""
-	if audioPath != "":
-		audio = " -i %s" %audioPath
+	elif encodeOptions != None:
+		codec = " -vcodec %s" %(encodeOptions)	
 		
 	start = ""
 	duration = ""
+	numberOfFrames = -1
 	if start_frame > -1:
 		start = ' -start_number "%s"' %start_frame
 	if end_frame > -1:
-		numberOfFrames = 1 + end_frame - start_frame
+		numberOfFrames = end_frame - start_frame +1
 		duration = ' -vframes "%s"' %numberOfFrames
 	if frame_duration > -1:
+		numberOfFrames = frame_duration
 		duration = ' -vframes "%s"' %frame_duration
 		
 	if "\\" in ffmpegPath:
 		ffmpegPath = ffmpegPath.replace("\\","/")
+		
+	audio = ""
+	if audioPath != "":
+		audio = " -i %s" %audioPath
 	
 	"""
 		-rc_override[:stream_specifier] override (output,per-stream)
 		Rate control override for specific intervals, formatted as "int,int,int" list separated with slashes. Two first values are the beginning and end frame numbers, last one is quantizer to use if positive, or quality factor if negative.
 	"""	
-	ffmpeg_command = '{ffmpeg}{start_frame} -i "{input}"{audio}{codec} -r {framerate}{duration} "{output}" -y'.format(ffmpeg=ffmpegPath, input=inputFilePath, output=outputFilePath, codec=codec, audio=audio, start_frame=start, duration=duration,framerate=framerate)
+	ffmpeg_command = '{ffmpeg}{start_frame} -r {framerate} -i "{input}"{audio}{codec} -r {framerate}{duration} "{output}" -y'.format(ffmpeg=ffmpegPath, input=inputFilePath, output=outputFilePath, codec=codec, audio=audio, start_frame=start, duration=duration,framerate=framerate)
 	print ffmpeg_command
 	value = subprocess.call(ffmpeg_command, creationflags=CREATE_NO_WINDOW, shell=False)
 	return value
