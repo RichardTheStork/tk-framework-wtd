@@ -1,4 +1,4 @@
-import os, subprocess
+import os, subprocess, sys
 
 CREATE_NO_WINDOW  = 0x00000008
 
@@ -6,12 +6,22 @@ def test():
 	print "Succesfull test!"
 
 ffmpegPath = ""
-try:
-	ffmpegPath = r'%s/ffmpeg.exe' %os.environ["FFMPEG_PATH"] 
-except:
-	ffmpegPath = r'ffmpeg.exe'
+
+if sys.platform == "linux2":
+	ffmpegPath = r'%s' % (os.getenv('FFMPEG','/rakete/tools/rakete/ffmpeg/lx64/ffmpeg'))
+elif sys.platform == "win32":
+	try:
+		ffmpegPath = r'%s/ffmpeg.exe' %os.environ["FFMPEG_PATH"] 
+	except:
+		ffmpegPath = r'ffmpeg.exe'
+elif sys.platform == "darwin":
+	ffmpegPath = r'%s' % (os.getenv('FFMPEG','/rakete/tools/rakete/ffmpeg/lx64/ffmpeg'))
+
+
 	
 def ffmpegMakingSlates(inputFilePath, outputFilePath, audioPath = "", topleft = "", topmiddle = "", topright = "", bottomleft = "", bottommiddle = "", bottomright = "", ffmpegPath = ffmpegPath, font = "arial.ttf", font_size = 16, font_color = "white", slate_height = 21, slate_color = "black@1.0", overwrite = True, logLevel = "quiet"):
+	if sys.platform == "linux2":
+		font = "/rakete/tools/installs/lx64/fonts/Verdana.ttf"
 	
 	top = "%s/5.0" %slate_height
 	bottom = "h-(%s-%s/5.0-1)" %(slate_height, slate_height)
@@ -36,7 +46,17 @@ def ffmpegMakingSlates(inputFilePath, outputFilePath, audioPath = "", topleft = 
 		font=font, font_size=font_size, font_color=font_color, 
 		slate_height=slate_height, slate_color=slate_color, overwrite = overwrite, logLevel = logLevel
 		)
-	value = subprocess.call(command_line_arguments, creationflags=CREATE_NO_WINDOW, shell=False)
+	print inputFilePath
+	print outputFilePath
+	print command_line_arguments
+
+	if sys.platform == "linux2":
+		value = subprocess.call(command_line_arguments, shell=True)
+	elif sys.platform == "win32":
+		value = subprocess.call(command_line_arguments, creationflags=CREATE_NO_WINDOW, shell=False)
+	elif sys.platform == "darwin":
+		value = subprocess.call(command_line_arguments, shell=True)
+	
 	return value
 	
 def ffmpegMakingMovie(inputFilePath, outputFilePath, audioPath = "",start_frame = -1, end_frame = -1, frame_duration = -1, framerate = 24, encodeOptions = None, ffmpegPath = ffmpegPath):
@@ -73,7 +93,14 @@ def ffmpegMakingMovie(inputFilePath, outputFilePath, audioPath = "",start_frame 
 	"""	
 	ffmpeg_command = '{ffmpeg}{start_frame} -r {framerate} -i "{input}"{audio}{codec} -r {framerate}{duration} "{output}" -y'.format(ffmpeg=ffmpegPath, input=inputFilePath, output=outputFilePath, codec=codec, audio=audio, start_frame=start, duration=duration,framerate=framerate)
 	print ffmpeg_command
-	value = subprocess.call(ffmpeg_command, creationflags=CREATE_NO_WINDOW, shell=False)
+	
+	if sys.platform == "linux2":
+		value = subprocess.call(ffmpeg_command,shell=True)
+	elif sys.platform == "win32":
+		value = subprocess.call(ffmpeg_command, creationflags=CREATE_NO_WINDOW, shell=False)
+	elif sys.platform == "darwin":
+		value = subprocess.call(ffmpeg_command,shell=True)
+	
 	return value
 	
 def combineMediaFiles(fileList, output, ffmpegPath = ffmpegPath):
@@ -103,7 +130,12 @@ def ffmpegConcatFiles(listfile, output, ffmpegPath = ffmpegPath):
 		command = '{ffmpeg} -f concat -i {mediaListFile} -c copy {output}'.format(ffmpeg=ffmpegPath, mediaListFile=listfile, output=output)
 		command = str.replace(str(command), "\\" , "/")
 		print command
-		value = subprocess.call(command, creationflags=CREATE_NO_WINDOW, shell=False)
+		if sys.platform == "linux2":
+			value = subprocess.call(command, shell=True)
+		elif sys.platform == "win32":
+			value = subprocess.call(command, creationflags=CREATE_NO_WINDOW, shell=False)
+		elif sys.platform == "darwin":
+			value = subprocess.call(command, shell=True)
 		return output
 	else:
 		return None
