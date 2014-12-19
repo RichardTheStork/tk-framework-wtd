@@ -32,7 +32,9 @@ class Positionlist:
 	def loadAssetTypes(self, assetType = None):
 		self.analyseContent()
 	
-		if assetType == 'Prop':
+		if assetType == None:
+			return self.content
+		elif assetType == 'Prop':
 			return self.props
 		elif assetType == 'Character':
 			return self.characters
@@ -78,13 +80,14 @@ class Positionlist:
 	def getList(self):
 		return self.content
 		
-def setAssetDict(name, asset, assetType, longName = None, animated = None, position = [0,0,0], rotation = [0,0,0], scale = [1,1,1], parentAssets = []):
+def setAssetDict(name, asset, assetType, longName = None, animated = None, position = [0,0,0], rotation = [0,0,0], scale = [1,1,1], parentAssets = [], resolution = None):
 	tempDict = {}
 	tempDict["name"] = name
 	tempDict["longName"] = longName
 	tempDict["asset"] = asset
 	tempDict["assetType"] = assetType
 	tempDict["animated"] = animated
+	tempDict["resolution"] = resolution
 	tempDict["position"] = position
 	tempDict["rotation"] = rotation
 	tempDict["scale"] = scale
